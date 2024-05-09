@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.1");
+console.log("[Noble] Noble script loaded 1.0.2");
 
 window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
