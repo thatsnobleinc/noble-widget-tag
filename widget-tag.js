@@ -1,5 +1,6 @@
 window.addEventListener("message", function (event) {
-	var nobleIframe = document.getElementById("nobleIframe");
+	let nobleIframe = document.getElementById("nobleIframe");
+	console.log("[Noble] Noble script loaded 1.0.0");
 
 	if (event.data.frameHeight) {
 		nobleIframe.style.height = event.data.frameHeight + `px`;
