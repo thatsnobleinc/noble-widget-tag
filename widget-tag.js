@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.3");
+console.log("[Noble] Noble script loaded 1.0.4");
 
 window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
@@ -41,9 +41,6 @@ window.addEventListener("message", function (event) {
 		nobleIframe.style.bottom = "auto";
 		nobleIframe.style.left = "0px";
 
-		//Move the body down
-		document.body.style.marginTop = "60px";
-
 		allElements.forEach((element) => {
 			// Ignore our iframe
 			if (element.id === "nobleIframe") return;
@@ -61,6 +58,9 @@ window.addEventListener("message", function (event) {
 				element.style.top = currentTop + 60 + "px";
 			}
 		});
+
+		//Move the body down
+		document.body.style.marginTop = "60px";
 	}
 
 	/**
