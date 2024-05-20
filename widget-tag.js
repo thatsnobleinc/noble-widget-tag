@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.4");
+console.log("[Noble] Noble script loaded 1.0.5");
 
 window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
@@ -69,8 +69,9 @@ window.addEventListener("message", function (event) {
 	 * - Change the whole document body position  back to original
 	 */
 	if (event.data === "bannerMinimized") {
-		//Move the body back to 0
+		//Move the body back to 0 and push the iframe a bit low
 		document.body.style.marginTop = "0";
+		nobleIframe.style.top = "80px";
 
 		allElements.forEach((element) => {
 			// Ignore our iframe
