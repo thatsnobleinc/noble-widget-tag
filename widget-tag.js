@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.6");
+console.log("[Noble] Noble script loaded 1.0.7");
 
 window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
@@ -36,7 +36,10 @@ window.addEventListener("message", function (event) {
 	 * - Change the positions of the top fixed/sticky elements
 	 * - Change the whole document body position
 	 */
-	if (event.data === "bannerVisible") {
+	if (
+		event.data === "bannerVisible" &&
+		!window.matchMedia("(max-width: 640px)").matches
+	) {
 		nobleIframe.style.top = "0px";
 		nobleIframe.style.bottom = "auto";
 		nobleIframe.style.left = "0px";
