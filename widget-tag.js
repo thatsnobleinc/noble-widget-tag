@@ -1,7 +1,46 @@
-console.log("[Noble] Noble script loaded 1.0.7");
+console.log("[Noble] Noble script loaded 1.0.8");
+const nobleIframe = document.getElementById("nobleIframe");
+
+/**
+ * Function to compute the ORIGINAL positions
+ * (top,bottom,right and left) of the iframe
+ */
+const getComputedStyleValue = (element, property) => {
+	const value = getComputedStyle(element).getPropertyValue(property);
+
+	if (property === "top") {
+		let bottomValue = getComputedStyle(element).getPropertyValue("bottom");
+		return value < bottomValue ? value : "auto";
+	}
+
+	if (property === "bottom") {
+		let topValue = getComputedStyle(element).getPropertyValue("top");
+		return value < topValue ? value : "auto";
+	}
+
+	if (property === "left") {
+		let rightValue = getComputedStyle(element).getPropertyValue("right");
+		return value < rightValue ? value : "auto";
+	}
+
+	if (property === "right") {
+		let leftValue = getComputedStyle(element).getPropertyValue("left");
+		return value < leftValue ? value : "auto";
+	}
+};
+
+/**
+ * Save original positions of the iframe
+ * Use case: After maximizing the banner, the widget goes to these positions
+ */
+const originalPositions = {
+	top: getComputedStyleValue(nobleIframe, "top"),
+	left: getComputedStyleValue(nobleIframe, "left"),
+	right: getComputedStyleValue(nobleIframe, "right"),
+	bottom: getComputedStyleValue(nobleIframe, "bottom"),
+};
 
 window.addEventListener("message", function (event) {
-	let nobleIframe = document.getElementById("nobleIframe");
 	const allElements = document.querySelectorAll("*");
 
 	/**
@@ -76,6 +115,10 @@ window.addEventListener("message", function (event) {
 		document.body.style.marginTop = "0";
 		nobleIframe.style.width = "0px";
 		nobleIframe.style.height = "0px";
+		nobleIframe.style.top = originalPositions.top;
+		nobleIframe.style.bottom = originalPositions.bottom;
+		nobleIframe.style.left = originalPositions.left;
+		nobleIframe.style.right = originalPositions.right;
 
 		allElements.forEach((element) => {
 			// Ignore our iframe
