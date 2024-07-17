@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.10");
+console.log("[Noble] Noble script loaded 1.0.10 Test");
 
 let originalPositions;
 
@@ -117,6 +117,7 @@ window.addEventListener("message", function (event) {
 	 * - Change the whole document body position  back to original
 	 */
 	if (event.data === "bannerMinimized") {
+		console.log(originalPositions);
 		//Move the body back to 0 and remove the iframe
 		document.body.style.marginTop = "0";
 		nobleIframe.style.width = "0px";
