@@ -1,8 +1,8 @@
-console.log("[Noble] Noble script loaded 1.0.10 Test");
+console.log("[Noble] Noble script loaded 1.0.11");
 
 let originalPositions;
 
-document.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("load", (event) => {
 	let nobleIframe = document.getElementById("nobleIframe");
 
 	/**
@@ -122,10 +122,14 @@ window.addEventListener("message", function (event) {
 		document.body.style.marginTop = "0";
 		nobleIframe.style.width = "0px";
 		nobleIframe.style.height = "0px";
-		nobleIframe.style.top = originalPositions.top;
-		nobleIframe.style.bottom = originalPositions.bottom;
-		nobleIframe.style.left = originalPositions.left;
-		nobleIframe.style.right = originalPositions.right;
+		nobleIframe.style.top = originalPositions ? originalPositions.top : "80px";
+		nobleIframe.style.bottom = originalPositions
+			? originalPositions.bottom
+			: "auto";
+		nobleIframe.style.left = originalPositions ? originalPositions.left : "0px";
+		nobleIframe.style.right = originalPositions
+			? originalPositions.right
+			: "auto";
 
 		allElements.forEach((element) => {
 			// Ignore our iframe
