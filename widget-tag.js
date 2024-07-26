@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.11");
+console.log("[Noble] Noble script loaded 1.0.12");
 
 let originalPositions;
 
