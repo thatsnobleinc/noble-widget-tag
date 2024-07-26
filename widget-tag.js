@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.11");
+console.log("[Noble] Noble script loaded 1.0.12");
 
 let originalPositions;
 
@@ -98,8 +98,9 @@ window.addEventListener("message", function (event) {
 
 			// Check if the element is fixed or sticky
 			if (
-				computedStyle.position === "fixed" ||
-				computedStyle.position === "sticky"
+				(computedStyle.position === "fixed" ||
+					computedStyle.position === "sticky") &&
+				computedStyle.top < computedStyle.bottom
 			) {
 				// Adjust the top position
 				const currentTop = parseInt(computedStyle.top) || 0;
@@ -139,8 +140,9 @@ window.addEventListener("message", function (event) {
 
 			// Check if the element is fixed or sticky
 			if (
-				computedStyle.position === "fixed" ||
-				computedStyle.position === "sticky"
+				(computedStyle.position === "fixed" ||
+					computedStyle.position === "sticky") &&
+				computedStyle.top < computedStyle.bottom
 			) {
 				// Adjust back the top position
 				const currentTop = parseInt(computedStyle.top) || 0;
