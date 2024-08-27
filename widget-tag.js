@@ -51,7 +51,7 @@ window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
 	const allElements = document.querySelectorAll("*");
 	const trustedOrigins = ["https://appdev.thatsnoble.com", "https://app.thatsnoble.com"]
-	const allowedNavigationDomains = ["https://dimmo.ai"];
+	const allowedNavigationDomains = ["https://dimmo.ai", "https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app"];
 
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
