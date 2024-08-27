@@ -55,7 +55,7 @@ window.addEventListener("message", function (event) {
 
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
-		console.log("Message received from a trusted origin:", event.data);
+		// console.log("Message received from a trusted origin:", event.data);
 
 		/**
 		 * Message to update iframe Height
@@ -175,6 +175,6 @@ window.addEventListener("message", function (event) {
 		}
 	} else {
 		// Log the case where the origin is not trusted
-		console.warn("Message received from an untrusted origin:", event.origin);
+		// console.warn("Message received from an untrusted origin:", event.origin);
 	}
 });
