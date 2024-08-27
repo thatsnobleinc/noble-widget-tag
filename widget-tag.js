@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.13");
+console.log("[Noble] Noble script loaded 1.0.14");
 
 let originalPositions;
 
@@ -51,11 +51,11 @@ window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
 	const allElements = document.querySelectorAll("*");
 	const trustedOrigins = ["https://appdev.thatsnoble.com", "https://app.thatsnoble.com"]
-	const allowedNavigationDomains = ["https://dimmo.ai"];
+	const allowedNavigationDomains = ["https://dimmo.ai", "https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app"];
 
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
-		console.log("Message received from a trusted origin:", event.data);
+		// console.log("Message received from a trusted origin:", event.data);
 
 		/**
 		 * Message to update iframe Height
@@ -175,6 +175,6 @@ window.addEventListener("message", function (event) {
 		}
 	} else {
 		// Log the case where the origin is not trusted
-		console.warn("Message received from an untrusted origin:", event.origin);
+		// console.warn("Message received from an untrusted origin:", event.origin);
 	}
 });
