@@ -49,7 +49,8 @@ let wasBannerVisibleOnPrevPage;
 						// Adjust back the top position
 						const currentTop = parseInt(computedStyle.top) || 0;
 						element.style.top = currentTop - 60 + "px";
-						wasIframeOnPrevPage = false
+						wasIframeOnPrevPage = false;
+						wasBannerVisibleOnPrevPage = false;
 						obs.disconnect();
 					}
 				});
