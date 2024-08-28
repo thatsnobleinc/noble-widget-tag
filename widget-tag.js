@@ -1,82 +1,130 @@
-console.log("[Noble] Noble script loaded 1.0.14");
+console.log("[Noble] Noble script loaded 1.0.16");
 
 let originalPositions;
+let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
+let wasBannerVisibleOnPrevPage;
 
- // Observer that resets the margin if iframe is removed without reload
- document.addEventListener('DOMContentLoaded', () => {
-	const observer = new MutationObserver(function (mutationsList) {
-	  mutationsList.forEach(mutation => {
-		if (mutation.type === 'childList') {
-		  const addedNodes = Array.from(mutation.addedNodes);
-		  addedNodes.forEach(node => {
-			// Use querySelector to find the iframe directly
-			const iframe = node.querySelector ? node.querySelector('#nobleIframe') : null;
-			if (!iframe && document.body.style.marginTop == "60px") {
-			  console.log("Noble not detected, reverting margin")
-			  document.body.style.marginTop = "0";
-			  const allElements = document.querySelectorAll("*");
-			  allElements.forEach((element) => {
-				if (element.id !== "nobleIframe") {
-				  const computedStyle = getComputedStyle(element);
-				  if (computedStyle.position === "fixed" || computedStyle.position === "sticky") {
-					const currentTop = parseInt(computedStyle.top) || 0;
-					element.style.top = (currentTop - 60) + "px";
-				  }
-				}
-			  });
+// Check for the iframe on navigation. Revert margins if not there.
+(function () {
+	const originalPushState = history.pushState;
+	const originalReplaceState = history.replaceState;
+
+
+	function checkForNoble(url) {
+		// // Log the URL
+		// console.log('URL changed to:', url);
+		// console.log('was noble on prev page?:', wasIframeOnPrevPage);
+
+		// Create a MutationObserver to wait for the DOM to update
+		const observer = new MutationObserver((mutations, obs) => {
+			const element = document.getElementById('nobleIframe');
+			if (element) {
+				console.log('nobleIframe exists.');
+				wasIframeOnPrevPage = true;
+				obs.disconnect(); // Stop observing once the iframe is found
+			} else if (wasIframeOnPrevPage && wasBannerVisibleOnPrevPage) {
+
+				console.log('nobleIframe does not exist on. Reverting margins.');
+
+
+				const allElements = document.querySelectorAll("*");
+
+				document.body.style.marginTop = "0";
+
+				allElements.forEach((element) => {
+
+
+					// Ignore our iframe
+					if (element.id === "nobleIframe") return;
+
+					// Get the computed style of each element
+					const computedStyle = getComputedStyle(element);
+
+					// Check if the element is fixed or sticky
+					if (
+						(computedStyle.position === "fixed" ||
+							computedStyle.position === "sticky") &&
+						computedStyle.top < computedStyle.bottom
+					) {
+						// Adjust back the top position
+						const currentTop = parseInt(computedStyle.top) || 0;
+						element.style.top = currentTop - 60 + "px";
+						wasIframeOnPrevPage = false
+						obs.disconnect();
+					}
+				});
+
 			}
-		  });
-		}
-	  });
+		});
+
+		// Start observing the document for changes
+		observer.observe(document.body, {
+			childList: true, // Observe direct children
+			subtree: true,   // Observe all descendants
+		});
+	}
+
+	history.pushState = function (...args) {
+		originalPushState.apply(this, args);
+		checkForNoble(args[2]); // URL is the third argument to pushState
+	};
+
+	history.replaceState = function (...args) {
+		originalReplaceState.apply(this, args);
+		checkForNoble(args[2]); // URL is the third argument to replaceState
+	};
+
+	window.addEventListener('popstate', function () {
+		checkForNoble(window.location.href); // URL on popstate
 	});
+})();
 
-	const config = { childList: true, subtree: true };
-
-	observer.observe(document.body, config);
-
-  });
 
 window.addEventListener("load", () => {
 	let nobleIframe = document.getElementById("nobleIframe");
 
-	/**
-	 * Function to compute the ORIGINAL positions
-	 * (top,bottom,right and left) of the iframe
-	 */
-	const getComputedStyleValue = (element, property) => {
-		const value = getComputedStyle(element).getPropertyValue(property);
+	if (nobleIframe) {
+		wasIframeOnPrevPage = true;
 
-		if (property === "top") {
-			let bottomValue = getComputedStyle(element).getPropertyValue("bottom");
-			return value < bottomValue ? value : "auto";
-		}
+		/**
+		 * Function to compute the ORIGINAL positions
+		 * (top,bottom,right and left) of the iframe
+		 */
+		const getComputedStyleValue = (element, property) => {
+			const value = getComputedStyle(element).getPropertyValue(property);
 
-		if (property === "bottom") {
-			let topValue = getComputedStyle(element).getPropertyValue("top");
-			return value < topValue ? value : "auto";
-		}
+			if (property === "top") {
+				let bottomValue = getComputedStyle(element).getPropertyValue("bottom");
+				return value < bottomValue ? value : "auto";
+			}
 
-		if (property === "left") {
-			let rightValue = getComputedStyle(element).getPropertyValue("right");
-			return value < rightValue ? value : "auto";
-		}
+			if (property === "bottom") {
+				let topValue = getComputedStyle(element).getPropertyValue("top");
+				return value < topValue ? value : "auto";
+			}
 
-		if (property === "right") {
-			let leftValue = getComputedStyle(element).getPropertyValue("left");
-			return value < leftValue ? value : "auto";
-		}
-	};
+			if (property === "left") {
+				let rightValue = getComputedStyle(element).getPropertyValue("right");
+				return value < rightValue ? value : "auto";
+			}
 
-	/**
-	 * Save original positions of the iframe
-	 * Use case: After maximizing the banner, the widget goes to these positions
-	 */
-	originalPositions = {
-		top: getComputedStyleValue(nobleIframe, "top"),
-		left: getComputedStyleValue(nobleIframe, "left"),
-		right: getComputedStyleValue(nobleIframe, "right"),
-		bottom: getComputedStyleValue(nobleIframe, "bottom"),
-	};
+			if (property === "right") {
+				let leftValue = getComputedStyle(element).getPropertyValue("left");
+				return value < leftValue ? value : "auto";
+			}
+		};
+
+		/**
+		 * Save original positions of the iframe
+		 * Use case: After maximizing the banner, the widget goes to these positions
+		 */
+		originalPositions = {
+			top: getComputedStyleValue(nobleIframe, "top"),
+			left: getComputedStyleValue(nobleIframe, "left"),
+			right: getComputedStyleValue(nobleIframe, "right"),
+			bottom: getComputedStyleValue(nobleIframe, "bottom"),
+		};
+	}
 });
 
 window.addEventListener("message", function (event) {
@@ -125,6 +173,8 @@ window.addEventListener("message", function (event) {
 			event.data === "bannerVisible" &&
 			!window.matchMedia("(max-width: 640px)").matches
 		) {
+
+			wasBannerVisibleOnPrevPage = true;
 			nobleIframe.style.top = "0px";
 			nobleIframe.style.bottom = "auto";
 			nobleIframe.style.left = "0px";
@@ -158,6 +208,7 @@ window.addEventListener("message", function (event) {
 		 * - Change the whole document body position  back to original
 		 */
 		if (event.data === "bannerMinimized") {
+			wasBannerVisibleOnPrevPage = false;
 			//Move the body back to 0 and remove the iframe
 			document.body.style.marginTop = "0";
 			nobleIframe.style.width = "0px";
