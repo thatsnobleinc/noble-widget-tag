@@ -24,7 +24,7 @@ let wasBannerVisibleOnPrevPage;
 				obs.disconnect(); // Stop observing once the iframe is found
 			} else if (wasIframeOnPrevPage && wasBannerVisibleOnPrevPage) {
 
-				console.log('nobleIframe does not exist on. Reverting margins.');
+				console.log('nobleIframe was not found on current page. Reverting margins.');
 
 
 				const allElements = document.querySelectorAll("*");
