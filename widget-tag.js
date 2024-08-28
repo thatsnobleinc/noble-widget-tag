@@ -85,18 +85,6 @@ window.addEventListener("message", function (event) {
 	const trustedOrigins = ["https://appdev.thatsnoble.com", "https://app.thatsnoble.com"]
 	const allowedNavigationDomains = ["https://dimmo.ai", "https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app"];
 
-
-	// Function to reset the body margin
-	function resetBodyMargin() {
-		document.body.style.marginTop = "0";
-	}
-
-	// Listen for navigation events (e.g., using the popstate event)
-	window.addEventListener("popstate", resetBodyMargin);
-	window.addEventListener("pushstate", resetBodyMargin);
-	window.addEventListener("replacestate", resetBodyMargin);
-
-
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
 		// console.log("Message received from a trusted origin:", event.data);
