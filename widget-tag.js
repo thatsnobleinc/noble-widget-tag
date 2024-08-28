@@ -2,7 +2,39 @@ console.log("[Noble] Noble script loaded 1.0.14");
 
 let originalPositions;
 
+ // Observer that resets the margin if iframe is removed without reload
+ document.addEventListener('DOMContentLoaded', () => {
+	const observer = new MutationObserver(function (mutationsList) {
+	  mutationsList.forEach(mutation => {
+		if (mutation.type === 'childList') {
+		  const addedNodes = Array.from(mutation.addedNodes);
+		  addedNodes.forEach(node => {
+			// Use querySelector to find the iframe directly
+			const iframe = node.querySelector ? node.querySelector('#nobleIframe') : null;
+			if (!iframe && document.body.style.marginTop == "60px") {
+			  console.log("Noble not detected, reverting margin")
+			  document.body.style.marginTop = "0";
+			  const allElements = document.querySelectorAll("*");
+			  allElements.forEach((element) => {
+				if (element.id !== "nobleIframe") {
+				  const computedStyle = getComputedStyle(element);
+				  if (computedStyle.position === "fixed" || computedStyle.position === "sticky") {
+					const currentTop = parseInt(computedStyle.top) || 0;
+					element.style.top = (currentTop - 60) + "px";
+				  }
+				}
+			  });
+			}
+		  });
+		}
+	  });
+	});
 
+	const config = { childList: true, subtree: true };
+
+	observer.observe(document.body, config);
+
+  });
 
 window.addEventListener("load", () => {
 	let nobleIframe = document.getElementById("nobleIframe");
