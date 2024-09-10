@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.16");
+console.log("[Noble] Noble script loaded 1.0.17");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -9,7 +9,6 @@ let wasBannerVisibleOnPrevPage;
 	const originalPushState = history.pushState;
 	const originalReplaceState = history.replaceState;
 
-
 	function checkForNoble(url) {
 		// // Log the URL
 		// console.log('URL changed to:', url);
@@ -17,51 +16,72 @@ let wasBannerVisibleOnPrevPage;
 
 		// Create a MutationObserver to wait for the DOM to update
 		const observer = new MutationObserver((mutations, obs) => {
-			const element = document.getElementById('nobleIframe');
+			const element = document.getElementById("nobleIframe");
 			if (element) {
-				console.log('nobleIframe exists.');
+				console.log("nobleIframe exists.");
 				wasIframeOnPrevPage = true;
 				obs.disconnect(); // Stop observing once the iframe is found
 			} else if (wasIframeOnPrevPage && wasBannerVisibleOnPrevPage) {
-
-				console.log('nobleIframe was not found on current page. Reverting margins.');
-
+				console.log(
+					"nobleIframe was not found on current page. Reverting margins."
+				);
 
 				const allElements = document.querySelectorAll("*");
 
 				document.body.style.marginTop = "0";
 
-				allElements.forEach((element) => {
+				if (window.innerWidth < 640) {
+					allElements.forEach((element) => {
+						// Ignore our iframe
+						if (element.id === "nobleIframe") return;
 
+						// Get the computed style of each element
+						const computedStyle = getComputedStyle(element);
 
-					// Ignore our iframe
-					if (element.id === "nobleIframe") return;
+						// Check if the element is fixed or sticky
+						if (
+							(computedStyle.position === "fixed" ||
+								computedStyle.position === "sticky") &&
+							parseInt(computedStyle.top) < parseInt(computedStyle.bottom)
+						) {
+							// Adjust back the top position
+							const currentTop = parseInt(computedStyle.top) || 0;
+							element.style.top = currentTop - 116 + "px";
+							wasIframeOnPrevPage = false;
+							wasBannerVisibleOnPrevPage = false;
+							obs.disconnect();
+						}
+					});
+				} else {
+					allElements.forEach((element) => {
+						// Ignore our iframe
+						if (element.id === "nobleIframe") return;
 
-					// Get the computed style of each element
-					const computedStyle = getComputedStyle(element);
+						// Get the computed style of each element
+						const computedStyle = getComputedStyle(element);
 
-					// Check if the element is fixed or sticky
-					if (
-						(computedStyle.position === "fixed" ||
-							computedStyle.position === "sticky") &&
-						computedStyle.top < computedStyle.bottom
-					) {
-						// Adjust back the top position
-						const currentTop = parseInt(computedStyle.top) || 0;
-						element.style.top = currentTop - 60 + "px";
-						wasIframeOnPrevPage = false;
-						wasBannerVisibleOnPrevPage = false;
-						obs.disconnect();
-					}
-				});
-
+						// Check if the element is fixed or sticky
+						if (
+							(computedStyle.position === "fixed" ||
+								computedStyle.position === "sticky") &&
+							parseInt(computedStyle.top) < parseInt(computedStyle.bottom)
+						) {
+							// Adjust back the top position
+							const currentTop = parseInt(computedStyle.top) || 0;
+							element.style.top = currentTop - 60 + "px";
+							wasIframeOnPrevPage = false;
+							wasBannerVisibleOnPrevPage = false;
+							obs.disconnect();
+						}
+					});
+				}
 			}
 		});
 
 		// Start observing the document for changes
 		observer.observe(document.body, {
 			childList: true, // Observe direct children
-			subtree: true,   // Observe all descendants
+			subtree: true, // Observe all descendants
 		});
 	}
 
@@ -75,14 +95,70 @@ let wasBannerVisibleOnPrevPage;
 		checkForNoble(args[2]); // URL is the third argument to replaceState
 	};
 
-	window.addEventListener('popstate', function () {
+	window.addEventListener("popstate", function () {
 		checkForNoble(window.location.href); // URL on popstate
 	});
 })();
 
+// Resize iframe depending on the window size for responsiveness
+const iframeResize = (isBanner) => {
+	let nobleIframe = document.getElementById("nobleIframe");
+	const allElements = document.querySelectorAll("*");
+
+	// Post the window width to the iframe
+	nobleIframe.contentWindow.postMessage(
+		{ windowWidth: window.innerWidth },
+		"*"
+	);
+
+	if (isBanner) {
+		if (window.innerWidth < 640) {
+			nobleIframe.style.height = `116px`;
+			allElements.forEach((element) => {
+				// Ignore our iframe
+				if (element.id === "nobleIframe") return;
+
+				// Get the computed style of each element
+				const computedStyle = getComputedStyle(element);
+
+				// Check if the element is fixed or sticky
+				if (
+					(computedStyle.position === "fixed" ||
+						computedStyle.position === "sticky") &&
+					parseInt(computedStyle.top) < parseInt(computedStyle.bottom)
+				) {
+					// Adjust the top position
+					const currentTop = parseInt(computedStyle.top) || 0;
+					element.style.top = currentTop + 116 + "px";
+				}
+			});
+		} else {
+			nobleIframe.style.height = `60px`;
+			allElements.forEach((element) => {
+				// Ignore our iframe
+				if (element.id === "nobleIframe") return;
+
+				// Get the computed style of each element
+				const computedStyle = getComputedStyle(element);
+
+				// Check if the element is fixed or sticky
+				if (
+					(computedStyle.position === "fixed" ||
+						computedStyle.position === "sticky") &&
+					parseInt(computedStyle.top) < parseInt(computedStyle.bottom)
+				) {
+					// Adjust the top position
+					const currentTop = parseInt(computedStyle.top) || 0;
+					element.style.top = currentTop + 60 + "px";
+				}
+			});
+		}
+	}
+};
 
 window.addEventListener("load", () => {
 	let nobleIframe = document.getElementById("nobleIframe");
+	nobleIframe.style.display = "block"; //Force widget to be displayed on mobile devices.
 
 	if (nobleIframe) {
 		wasIframeOnPrevPage = true;
@@ -128,11 +204,20 @@ window.addEventListener("load", () => {
 	}
 });
 
+window.addEventListener("resize", () => iframeResize(false));
+
 window.addEventListener("message", function (event) {
 	let nobleIframe = document.getElementById("nobleIframe");
 	const allElements = document.querySelectorAll("*");
-	const trustedOrigins = ["https://appdev.thatsnoble.com", "https://app.thatsnoble.com"]
-	const allowedNavigationDomains = ["https://dimmo.ai", "https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app"];
+	const trustedOrigins = [
+		"https://appdev.thatsnoble.com",
+		"https://app.thatsnoble.com",
+		"http://localhost:5173",
+	];
+	const allowedNavigationDomains = [
+		"https://dimmo.ai",
+		"https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app",
+	];
 
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
@@ -142,7 +227,8 @@ window.addEventListener("message", function (event) {
 		 * Message to update iframe Height
 		 */
 		if (event.data.frameHeight) {
-			nobleIframe.style.height = event.data.frameHeight + `px`;
+			if (window.innerWidth < 640) nobleIframe.style.height = `100%`;
+			else nobleIframe.style.height = event.data.frameHeight + `px`;
 		}
 
 		/**
@@ -152,8 +238,15 @@ window.addEventListener("message", function (event) {
 			if (String(event.data.frameWidth).includes("%")) {
 				nobleIframe.style.width = event.data.frameWidth;
 			} else {
-				nobleIframe.style.width = event.data.frameWidth + `px`;
+				if (window.innerWidth < 640) nobleIframe.style.width = `100%`;
+				else nobleIframe.style.width = event.data.frameWidth + `px`;
 			}
+
+			// Post the window width to the iframe
+			nobleIframe.contentWindow.postMessage(
+				{ windowWidth: window.innerWidth },
+				"*"
+			);
 		}
 
 		/**
@@ -170,37 +263,16 @@ window.addEventListener("message", function (event) {
 		 * - Change the positions of the top fixed/sticky elements
 		 * - Change the whole document body position
 		 */
-		if (
-			event.data === "bannerVisible" &&
-			!window.matchMedia("(max-width: 640px)").matches
-		) {
-
+		if (event.data === "bannerVisible") {
 			wasBannerVisibleOnPrevPage = true;
 			nobleIframe.style.top = "0px";
 			nobleIframe.style.bottom = "auto";
 			nobleIframe.style.left = "0px";
-
-			allElements.forEach((element) => {
-				// Ignore our iframe
-				if (element.id === "nobleIframe") return;
-
-				// Get the computed style of each element
-				const computedStyle = getComputedStyle(element);
-
-				// Check if the element is fixed or sticky
-				if (
-					(computedStyle.position === "fixed" ||
-						computedStyle.position === "sticky") &&
-					computedStyle.top < computedStyle.bottom
-				) {
-					// Adjust the top position
-					const currentTop = parseInt(computedStyle.top) || 0;
-					element.style.top = currentTop + 60 + "px";
-				}
-			});
+			iframeResize(true);
 
 			//Move the body down
-			document.body.style.marginTop = "60px";
+			if (window.innerWidth < 640) document.body.style.marginTop = "116px";
+			else document.body.style.marginTop = "60px";
 		}
 
 		/**
@@ -214,11 +286,15 @@ window.addEventListener("message", function (event) {
 			document.body.style.marginTop = "0";
 			nobleIframe.style.width = "0px";
 			nobleIframe.style.height = "0px";
-			nobleIframe.style.top = originalPositions ? originalPositions.top : "80px";
+			nobleIframe.style.top = originalPositions
+				? originalPositions.top
+				: "80px";
 			nobleIframe.style.bottom = originalPositions
 				? originalPositions.bottom
 				: "auto";
-			nobleIframe.style.left = originalPositions ? originalPositions.left : "0px";
+			nobleIframe.style.left = originalPositions
+				? originalPositions.left
+				: "0px";
 			nobleIframe.style.right = originalPositions
 				? originalPositions.right
 				: "auto";
@@ -234,11 +310,14 @@ window.addEventListener("message", function (event) {
 				if (
 					(computedStyle.position === "fixed" ||
 						computedStyle.position === "sticky") &&
-					computedStyle.top < computedStyle.bottom
+					parseInt(computedStyle.top) < parseInt(computedStyle.bottom)
 				) {
 					// Adjust back the top position
 					const currentTop = parseInt(computedStyle.top) || 0;
-					element.style.top = currentTop - 60 + "px";
+
+					if (window.innerWidth < 640)
+						element.style.top = currentTop - 116 + "px";
+					else element.style.top = currentTop - 60 + "px";
 				}
 			});
 		}
