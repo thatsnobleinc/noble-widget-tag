@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.17");
+console.log("[Noble] Noble script loaded 1.0.18");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
