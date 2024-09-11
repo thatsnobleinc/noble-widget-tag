@@ -21,14 +21,14 @@ let wasBannerVisibleOnPrevPage;
 				console.log("nobleIframe exists.");
 				wasIframeOnPrevPage = true;
 				obs.disconnect(); // Stop observing once the iframe is found
-			} else if (wasIframeOnPrevPage && wasBannerVisibleOnPrevPage) {
+			} else if (wasBannerVisibleOnPrevPage) {
 				console.log(
 					"nobleIframe was not found on current page. Reverting margins."
 				);
 
 				const allElements = document.querySelectorAll("*");
 
-				document.body.style.marginTop = "0";
+				document.body.style.marginTop = "0";https://webapp-git-noble-integratio-c3ddc7-lucas-swartsenburgs-projects.vercel.app
 
 				if (window.innerWidth < 640) {
 					allElements.forEach((element) => {
