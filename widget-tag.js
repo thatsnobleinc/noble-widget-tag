@@ -28,7 +28,7 @@ let wasBannerVisibleOnPrevPage;
 
 				const allElements = document.querySelectorAll("*");
 
-				document.body.style.marginTop = "0";https://webapp-git-noble-integratio-c3ddc7-lucas-swartsenburgs-projects.vercel.app
+				document.body.style.marginTop = "0";
 
 				if (window.innerWidth < 640) {
 					allElements.forEach((element) => {
