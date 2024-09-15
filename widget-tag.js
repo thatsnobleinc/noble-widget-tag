@@ -217,8 +217,10 @@ window.addEventListener("message", function (event) {
 		 * Message to update iframe Height
 		 */
 		if (event.data.frameHeight) {
-			if (window.innerWidth < 640) nobleIframe.style.height = `100%`;
-			else nobleIframe.style.height = event.data.frameHeight + `px`;
+			if (window.innerWidth < 640) {
+				nobleIframe.style.height = `100%`;
+				nobleIframe.style.minHeight = `620px`;
+			} else nobleIframe.style.height = event.data.frameHeight + `px`;
 		}
 
 		/**
