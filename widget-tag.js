@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.19");
+console.log("[Noble] Noble script loaded 1.0.20");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -217,10 +217,14 @@ window.addEventListener("message", function (event) {
 		 * Message to update iframe Height
 		 */
 		if (event.data.frameHeight) {
-			if (window.innerWidth < 640) {
+			if (window.innerWidth < 640 && event.data.frameHeight != 60) {
 				nobleIframe.style.height = `100%`;
 				nobleIframe.style.minHeight = `620px`;
-			} else nobleIframe.style.height = event.data.frameHeight + `px`;
+			} else {
+				nobleIframe.style.height = event.data.frameHeight + `px`;
+
+				if (event.data.frameHeight === 60) nobleIframe.style.minHeight = ``;
+			}
 		}
 
 		/**
