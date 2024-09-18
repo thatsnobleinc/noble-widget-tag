@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.20");
+console.log("[Noble] Noble script loaded 1.0.21");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -259,16 +259,24 @@ window.addEventListener("message", function (event) {
 		 * - Change the positions of the top fixed/sticky elements
 		 * - Change the whole document body position
 		 */
-		if (event.data === "bannerVisible") {
-			wasBannerVisibleOnPrevPage = true;
-			nobleIframe.style.top = "0px";
-			nobleIframe.style.bottom = "auto";
-			nobleIframe.style.left = "0px";
-			iframeResize(true);
+		if (event.data.bannerVisibility === "bannerVisible") {
+			if (!event.data.bannerEmbed) {
+				wasBannerVisibleOnPrevPage = true;
+				nobleIframe.style.top = "0px";
+				nobleIframe.style.bottom = "auto";
+				nobleIframe.style.left = "0px";
+				iframeResize(true);
 
-			//Move the body down
-			if (window.innerWidth < 640) document.body.style.marginTop = "116px";
-			else document.body.style.marginTop = "60px";
+				//Move the body down
+				if (window.innerWidth < 640) document.body.style.marginTop = "116px";
+				else document.body.style.marginTop = "60px";
+			} else {
+				iframeResize(false);
+				nobleIframe.style.margin = "32px auto";
+
+				if (window.innerWidth < 640) nobleIframe.style.height = `116px`;
+				else nobleIframe.style.height = `60px`;
+			}
 		}
 
 		/**
@@ -276,26 +284,29 @@ window.addEventListener("message", function (event) {
 		 * - Change the positions of the top fixed/sticky elements back to original
 		 * - Change the whole document body position  back to original
 		 */
-		if (event.data === "bannerMinimized") {
-			wasBannerVisibleOnPrevPage = false;
-			//Move the body back to 0 and remove the iframe
-			document.body.style.marginTop = "0";
+		if (event.data.bannerVisibility === "bannerMinimized") {
 			nobleIframe.style.width = "0px";
 			nobleIframe.style.height = "0px";
-			nobleIframe.style.top = originalPositions
-				? originalPositions.top
-				: "80px";
-			nobleIframe.style.bottom = originalPositions
-				? originalPositions.bottom
-				: "auto";
-			nobleIframe.style.left = originalPositions
-				? originalPositions.left
-				: "0px";
-			nobleIframe.style.right = originalPositions
-				? originalPositions.right
-				: "auto";
 
-			adjustPageContent(false, null, allElements);
+			if (!event.data.bannerEmbed) {
+				wasBannerVisibleOnPrevPage = false;
+				//Move the body back to 0 and remove the iframe
+				document.body.style.marginTop = "0";
+				nobleIframe.style.top = originalPositions
+					? originalPositions.top
+					: "80px";
+				nobleIframe.style.bottom = originalPositions
+					? originalPositions.bottom
+					: "auto";
+				nobleIframe.style.left = originalPositions
+					? originalPositions.left
+					: "0px";
+				nobleIframe.style.right = originalPositions
+					? originalPositions.right
+					: "auto";
+
+				adjustPageContent(false, null, allElements);
+			} else nobleIframe.style.margin = "32px auto";
 		}
 
 		/**
