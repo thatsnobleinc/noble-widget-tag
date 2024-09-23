@@ -83,9 +83,9 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 			const nobleIframe = document.getElementById("nobleIframe");
 
 			if (nobleIframe) {
-				console.log("[Noble] nobleIframe exists.");
+				//console.log("[Noble] nobleIframe exists.");
 				wasIframeOnPrevPage = true;
-				obs.disconnect(); // Stop observing once the iframe is found
+				//obs.disconnect(); // Stop observing once the iframe is found
 			} else if (wasBannerVisibleOnPrevPage) {
 				console.log(
 					"[Noble] nobleIframe was not found on current page. Reverting margins."
