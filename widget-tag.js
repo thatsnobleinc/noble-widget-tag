@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.21");
+console.log("[Noble] Noble script loaded 1.0.22");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -30,7 +30,7 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 	//Add space for the banner
 	if (isBannerVisible) {
 		//Adjust mobile devices
-		if (window.innerWidth < 640) {
+		if (window.innerWidth < 640 && document.body.style.marginTop != "116px") {
 			nobleIframe.style.height = `116px`;
 
 			allElements.forEach((element) => {
@@ -42,7 +42,7 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 					element.style.top = currentTop + 116 + "px";
 				}
 			});
-		} else {
+		} else if (document.body.style.marginTop != "60px") {
 			//Adjust desktop devices
 			nobleIframe.style.height = `60px`;
 			allElements.forEach((element) => {
