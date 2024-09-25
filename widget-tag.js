@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.22");
+console.log("[Noble] Noble script loaded 1.0.23");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -203,11 +203,11 @@ window.addEventListener("message", function (event) {
 	const allElements = document.querySelectorAll("*");
 	const trustedOrigins = [
 		"https://appdev.thatsnoble.com",
-		"https://app.thatsnoble.com",
-		"http://localhost:5173",
+		"https://app.thatsnoble.com"
 	];
 	const allowedNavigationDomains = [
 		"https://dimmo.ai",
+		"https://www.dimmo.ai",
 		"https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app",
 	];
 
