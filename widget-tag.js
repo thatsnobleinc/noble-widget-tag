@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 1.0.21");
+console.log("[Noble] Noble script loaded 1.0.23");
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -30,7 +30,7 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 	//Add space for the banner
 	if (isBannerVisible) {
 		//Adjust mobile devices
-		if (window.innerWidth < 640) {
+		if (window.innerWidth < 640 && document.body.style.marginTop != "116px") {
 			nobleIframe.style.height = `116px`;
 
 			allElements.forEach((element) => {
@@ -42,7 +42,7 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 					element.style.top = currentTop + 116 + "px";
 				}
 			});
-		} else {
+		} else if (document.body.style.marginTop != "60px") {
 			//Adjust desktop devices
 			nobleIframe.style.height = `60px`;
 			allElements.forEach((element) => {
@@ -83,9 +83,9 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 			const nobleIframe = document.getElementById("nobleIframe");
 
 			if (nobleIframe) {
-				console.log("[Noble] nobleIframe exists.");
+				//console.log("[Noble] nobleIframe exists.");
 				wasIframeOnPrevPage = true;
-				obs.disconnect(); // Stop observing once the iframe is found
+				//obs.disconnect(); // Stop observing once the iframe is found
 			} else if (wasBannerVisibleOnPrevPage) {
 				console.log(
 					"[Noble] nobleIframe was not found on current page. Reverting margins."
@@ -203,11 +203,11 @@ window.addEventListener("message", function (event) {
 	const allElements = document.querySelectorAll("*");
 	const trustedOrigins = [
 		"https://appdev.thatsnoble.com",
-		"https://app.thatsnoble.com",
-		"http://localhost:5173",
+		"https://app.thatsnoble.com"
 	];
 	const allowedNavigationDomains = [
 		"https://dimmo.ai",
+		"https://www.dimmo.ai",
 		"https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app",
 	];
 
