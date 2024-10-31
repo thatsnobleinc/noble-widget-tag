@@ -1,4 +1,13 @@
-console.log("[Noble] Noble script loaded 1.0.23");
+console.log("[Noble] Noble script loaded 2.0.1");
+
+
+
+
+const BANNER_EXPANDED_HEIGHT = 300;
+const BANNER_INITIAL_HEIGHT = 88;
+
+const BANNER_EXPANDED_HEIGHT_STR = BANNER_EXPANDED_HEIGHT + 'px';
+const BANNER_INITIAL_HEIGHT_STR = BANNER_INITIAL_HEIGHT + 'px';
 
 let originalPositions;
 let wasIframeOnPrevPage; // boolean to indicate if header was already adjusted on previous navigation
@@ -26,7 +35,7 @@ const checkIsTopFixedElement = (computedStyle) => {
 /**
  * Adjust page content depending on the banner visibility
  */
-const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
+const adjustPageContent = (isBannerVisible, nobleIframe, allElements, marginTop) => {
 	//Add space for the banner
 	if (isBannerVisible) {
 		//Adjust mobile devices
@@ -42,16 +51,16 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 					element.style.top = currentTop + 116 + "px";
 				}
 			});
-		} else if (document.body.style.marginTop != "84px") {
+		} else if (document.body.style.marginTop != marginTop) {
 			//Adjust desktop devices
-			nobleIframe.style.height = `84px`;
+			nobleIframe.style.height = marginTop;
 			allElements.forEach((element) => {
 				const computedStyle = getComputedStyle(element);
 
 				if (element.id === "nobleIframe") return;
 				if (checkIsTopFixedElement(computedStyle)) {
 					const currentTop = parseInt(computedStyle.top) || 0;
-					element.style.top = currentTop + 84 + "px";
+					element.style.top = currentTop + marginTop;// TODO: double check this
 				}
 			});
 		}
@@ -65,6 +74,76 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 				if (window.innerWidth < 640)
 					element.style.top = currentTop - 116 + "px";
 				else element.style.top = currentTop - 84 + "px";
+			}
+		});
+	}
+};
+
+const adjustPageContentInitialBanner = () => {
+	let nobleIframe = document.getElementById("nobleIframe");
+	const allElements = document.querySelectorAll("*");
+
+	//Adjust mobile devices
+	if (window.innerWidth < 640 && document.body.style.marginTop != "116px") {
+		nobleIframe.style.height = `116px`;
+
+		allElements.forEach((element) => {
+			const computedStyle = getComputedStyle(element);
+
+			if (element.id === "nobleIframe") return;
+			if (checkIsTopFixedElement(computedStyle)) {
+				const currentTop = parseInt(computedStyle.top) || 0;
+				element.style.top = currentTop + 116 + "px";
+			}
+		});
+	} else if (document.body.style.marginTop != BANNER_INITIAL_HEIGHT_STR) {
+		//Adjust desktop devices
+		nobleIframe.style.height = BANNER_INITIAL_HEIGHT_STR;
+		allElements.forEach((element) => {
+			const computedStyle = getComputedStyle(element);
+
+			if (element.id === "nobleIframe") return;
+			if (checkIsTopFixedElement(computedStyle)) {
+				const currentTop = parseInt(computedStyle.top) || 0;
+				element.style.top = currentTop + BANNER_INITIAL_HEIGHT_STR;
+			}
+		});
+	}
+};
+
+const adjustPageContentExpandedBanner = () => {
+	let nobleIframe = document.getElementById("nobleIframe");
+	const allElements = document.querySelectorAll("*");
+
+	let heightDiff = BANNER_EXPANDED_HEIGHT - BANNER_INITIAL_HEIGHT
+	let heightDiffStr = heightDiff + "px"
+
+	//Adjust mobile devices
+	if (window.innerWidth < 640 && document.body.style.marginTop != "116px") {
+		nobleIframe.style.height = `116px`;
+
+		allElements.forEach((element) => {
+			const computedStyle = getComputedStyle(element);
+
+			if (element.id === "nobleIframe") return;
+			if (checkIsTopFixedElement(computedStyle)) {
+				const currentTop = parseInt(computedStyle.top) || 0;
+				element.style.top = currentTop + 116 + "px";
+			}
+		});
+	} else if (document.body.style.marginTop != heightDiffStr) {
+		//Adjust desktop devices
+		nobleIframe.style.height = BANNER_EXPANDED_HEIGHT_STR;
+		allElements.forEach((element) => {
+			const computedStyle = getComputedStyle(element);
+
+			if (element.id === "nobleIframe") return;
+			if (checkIsTopFixedElement(computedStyle)) {
+				const currentTop = parseInt(computedStyle.top) || 0;
+				console.log(currentTop)
+				console.log(heightDiff)
+
+				element.style.top = currentTop + heightDiff + "px";
 			}
 		});
 	}
@@ -125,7 +204,7 @@ const adjustPageContent = (isBannerVisible, nobleIframe, allElements) => {
 /**
  * Resize iframe depending on the window size for responsiveness
  */
-const iframeResize = (isBanner) => {
+const iframeResize = (isBanner, height) => {
 	let nobleIframe = document.getElementById("nobleIframe");
 	const allElements = document.querySelectorAll("*");
 
@@ -136,7 +215,7 @@ const iframeResize = (isBanner) => {
 	);
 
 	//Adjust content if banner is visible
-	if (isBanner) adjustPageContent(true, nobleIframe, allElements);
+	if (isBanner) adjustPageContent(true, nobleIframe, allElements, height);
 };
 
 /**
@@ -148,45 +227,6 @@ window.addEventListener("load", () => {
 
 	if (nobleIframe) {
 		wasIframeOnPrevPage = true;
-
-		/**
-		 * Function to compute the ORIGINAL positions
-		 * (top,bottom,right and left) of the iframe
-		 */
-		const getComputedStyleValue = (element, property) => {
-			const value = getComputedStyle(element).getPropertyValue(property);
-
-			if (property === "top") {
-				let bottomValue = getComputedStyle(element).getPropertyValue("bottom");
-				return value < bottomValue ? value : "auto";
-			}
-
-			if (property === "bottom") {
-				let topValue = getComputedStyle(element).getPropertyValue("top");
-				return value < topValue ? value : "auto";
-			}
-
-			if (property === "left") {
-				let rightValue = getComputedStyle(element).getPropertyValue("right");
-				return value < rightValue ? value : "auto";
-			}
-
-			if (property === "right") {
-				let leftValue = getComputedStyle(element).getPropertyValue("left");
-				return value < leftValue ? value : "auto";
-			}
-		};
-
-		/**
-		 * Save original positions of the iframe
-		 * Use case: After maximizing the banner, the widget goes to these positions
-		 */
-		originalPositions = {
-			top: getComputedStyleValue(nobleIframe, "top"),
-			left: getComputedStyleValue(nobleIframe, "left"),
-			right: getComputedStyleValue(nobleIframe, "right"),
-			bottom: getComputedStyleValue(nobleIframe, "bottom"),
-		};
 	}
 });
 
@@ -204,7 +244,7 @@ window.addEventListener("message", function (event) {
 	const trustedOrigins = [
 		"https://appdev.thatsnoble.com",
 		"https://app.thatsnoble.com",
-		"https://e6b2-68-9-192-22.ngrok-free.app"
+		"https://1236-68-9-192-22.ngrok-free.app" //TODO: remove this
 	];
 	const allowedNavigationDomains = [
 		"https://dimmo.ai",
@@ -212,22 +252,23 @@ window.addEventListener("message", function (event) {
 		"https://webapp-git-noble-integration-lucas-swartsenburgs-projects.vercel.app",
 	];
 
-
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
 		/**
 		 * Message to update iframe Height
 		 */
-		if (event.data.frameHeight) {
-			if (window.innerWidth < 640 && event.data.frameHeight != 84) {
-				nobleIframe.style.height = `84%`;
-				nobleIframe.style.minHeight = `620px`;
-			} else {
-				nobleIframe.style.height = event.data.frameHeight + `px`;
+		// if (event.data.frameHeight) {
+		// 	if (window.innerWidth < 640) {
+		// 		nobleIframe.style.height = `100%`;
+		// 		nobleIframe.style.minHeight = `620px`;
+		// 	} else {
+		// 		nobleIframe.style.height = event.data.frameHeight + `px`;
 
-				if (event.data.frameHeight === 84) nobleIframe.style.minHeight = ``;
-			}
-		}
+		// 		iframeResize(true, BANNER_INITIAL_HEIGHT_STR);
+
+		// 		if (event.data.frameHeight === 84) nobleIframe.style.minHeight = ``;
+		// 	}
+		// }
 
 		/**
 		 * Message to update iframe Width
@@ -236,7 +277,7 @@ window.addEventListener("message", function (event) {
 			if (String(event.data.frameWidth).includes("%")) {
 				nobleIframe.style.width = event.data.frameWidth;
 			} else {
-				if (window.innerWidth < 640) nobleIframe.style.width = `84%`;
+				if (window.innerWidth < 640) nobleIframe.style.width = `100%`;
 				else nobleIframe.style.width = event.data.frameWidth + `px`;
 			}
 
@@ -261,25 +302,49 @@ window.addEventListener("message", function (event) {
 		 * - Change the positions of the top fixed/sticky elements
 		 * - Change the whole document body position
 		 */
-		if (event.data.bannerVisibility === "bannerVisible") {
+		if (event.data.bannerVisibility === "bannerLoaded") {
+			console.log("Banner Loaded!!")
 			if (!event.data.bannerEmbed) {
 				wasBannerVisibleOnPrevPage = true;
-				nobleIframe.style.top = "0px";
-				nobleIframe.style.bottom = "auto";
-				nobleIframe.style.left = "0px";
-				iframeResize(true);
+				// nobleIframe.style.top = "0px";
+				// nobleIframe.style.bottom = "auto";
+				// nobleIframe.style.left = "0px";
+				//iframeResize(true, BANNER_INITIAL_HEIGHT_STR);
+				adjustPageContentInitialBanner()
 
 				//Move the body down
 				if (window.innerWidth < 640) document.body.style.marginTop = "116px";
-				else document.body.style.marginTop = "84px";
+				else document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 			} else {
 				iframeResize(false);
 				nobleIframe.style.margin = "32px auto";
 
 				if (window.innerWidth < 640) nobleIframe.style.height = `116px`;
-				else nobleIframe.style.height = `84px`;
+				else nobleIframe.style.height = BANNER_INITIAL_HEIGHT_STR;
 			}
 		}
+
+		if (event.data.bannerVisibility === "bannerExpanded") {
+			console.log("Banner Expanded")
+			if (!event.data.bannerEmbed) {
+				// wasBannerVisibleOnPrevPage = true;
+				// nobleIframe.style.top = "0px";
+				// nobleIframe.style.bottom = "auto";
+				// nobleIframe.style.left = "0px";
+				adjustPageContentExpandedBanner()
+				//Move the body down
+				if (window.innerWidth < 640) document.body.style.marginTop = "116px";
+				else document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
+			} else {
+				iframeResize(false);
+				nobleIframe.style.margin = "32px auto";
+
+				if (window.innerWidth < 640) nobleIframe.style.height = `116px`;
+				else nobleIframe.style.height = BANNER_EXPANDED_HEIGHT_STR;
+			}
+		}
+
+
 
 		/**
 		 * Message to:
@@ -326,7 +391,7 @@ window.addEventListener("message", function (event) {
 			}
 		}
 	} else {
-		// Log the case where the origin is not trusted
-		// console.warn("Message received from an untrusted origin:", event.origin);
+		//Log the case where the origin is not trusted
+		console.warn("Message received from an untrusted origin:", event.origin);
 	}
 });
