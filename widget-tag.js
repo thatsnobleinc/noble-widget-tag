@@ -87,7 +87,7 @@ window.addEventListener("message", function (event) {
 	const trustedOrigins = [
 		"https://appdev.thatsnoble.com",
 		"https://app.thatsnoble.com",
-		"https://55e2-68-9-192-22.ngrok-free.app" //TODO: remove this
+		"https://8eff-68-9-192-22.ngrok-free.app" //TODO: remove this
 	];
 	const allowedNavigationDomains = [
 		"https://dimmo.ai",
