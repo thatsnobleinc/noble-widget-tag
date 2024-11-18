@@ -178,7 +178,7 @@ window.addEventListener("message", function (event) {
 		 * - Change the whole document body position
 		 */
 		if (event.data.bannerVisibility === "bannerLoaded") {
-			console.log("Banner Loaded")
+			//console.log("Banner Loaded")
 			adjustPageContentInitialBanner()
 			document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 			wasBannerOnPrevPage = true
@@ -187,7 +187,7 @@ window.addEventListener("message", function (event) {
 		}
 
 		if (event.data.bannerVisibility === "bannerExpanded") {
-			console.log("Banner Expanded")
+			//console.log("Banner Expanded")
 			adjustPageContentExpandedBanner()
 			document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
 			wasBannerExpandedOnPrevPage = true
@@ -195,7 +195,7 @@ window.addEventListener("message", function (event) {
 		}
 
 		if (event.data.bannerVisibility === "bannerCollapsed") {
-			console.log("Banner Loaded")
+			//console.log("Banner Loaded")
 			adjustPageContentCollapseBanner()
 			document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 			wasBannerExpandedOnPrevPage = false;
