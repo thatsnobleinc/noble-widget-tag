@@ -152,7 +152,7 @@ window.addEventListener("load", () => {
 window.addEventListener("message", function (event) {
 	const trustedOrigins = [
 		"https://app-staging.v2.thatsnoble.com",
-		"https://app.thatsnoble.com"
+		"https://app.v2.thatsnoble.com"
 	];
 	const allowedNavigationDomains = [
 		"https://dimmo.ai",
