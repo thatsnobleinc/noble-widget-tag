@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.1");
+console.log("[Noble] Noble script loaded 2.0.2");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -30,14 +30,10 @@ const checkIsTopFixedElement = (computedStyle) => {
 
 
 const adjustPageContent = (newHeightStr, heightDiff) => {
-	let nobleIframe = document.getElementById("nobleIframe");
 	const allElements = document.querySelectorAll("*");
 
 	if (document.body.style.marginTop != newHeightStr) {
-
-		if (nobleIframe)
-			nobleIframe.style.height = newHeightStr;
-
+		adjustBannerHeight(newHeightStr)
 		allElements.forEach((element) => {
 			const computedStyle = getComputedStyle(element);
 
@@ -48,6 +44,12 @@ const adjustPageContent = (newHeightStr, heightDiff) => {
 			}
 		});
 	}
+};
+
+const adjustBannerHeight = (newHeightStr) => {
+	const nobleIframe = document.getElementById("nobleIframe");
+	if (nobleIframe)
+		nobleIframe.style.height = newHeightStr;
 };
 
 /**
@@ -69,6 +71,19 @@ const adjustPageContentCollapseBanner = () => {
 };
 
 
+/** Expand and collapse embedded banner**/
+
+const initialEmbeddedBanner = () => {
+	adjustBannerHeight(BANNER_INITIAL_HEIGHT_STR);
+};
+
+
+const expandEmbeddedBanner = () => {
+	adjustBannerHeight(BANNER_EXPANDED_HEIGHT_STR);
+};
+
+
+/**Remove banner for distributor pages without Noble**/
 const removeCollapsedBanner = () => {
 	adjustPageContent("0px", -BANNER_INITIAL_HEIGHT);
 };
@@ -163,6 +178,10 @@ window.addEventListener("message", function (event) {
 	// Check if the event.origin is in the list of trusted origins
 	if (trustedOrigins.includes(event.origin)) {
 
+		// check if banner is embedded; assume not if not defined
+		const isEmbedded = event.data.embedded ? event.data.embedded : false;
+
+
 		/**
 		 * Message to get URL where the widget is embedded
 		 */
@@ -171,6 +190,8 @@ window.addEventListener("message", function (event) {
 			const iframeURL = window.location.href;
 			event.source.postMessage({ iframeURL: iframeURL }, event.origin);
 		}
+
+
 
 		/**
 		 * Message to:
@@ -182,30 +203,35 @@ window.addEventListener("message", function (event) {
 			const nobleIframe = document.getElementById("nobleIframe");
 			nobleIframe.style.top = "0px";
 			nobleIframe.style.width = "100%"
-
-			//console.log("Banner Loaded")
-			adjustPageContentInitialBanner()
-			document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
-			wasBannerOnPrevPage = true
-			wasBannerExpandedOnPrevPage = false
-
+			if (isEmbedded) {
+				initialEmbeddedBanner();
+			} else {
+				adjustPageContentInitialBanner()
+				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				wasBannerOnPrevPage = true
+				wasBannerExpandedOnPrevPage = false
+			}
 		}
 
 		if (event.data.bannerVisibility === "bannerExpanded") {
-			//console.log("Banner Expanded")
-			adjustPageContentExpandedBanner()
-			document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
-			wasBannerExpandedOnPrevPage = true
-
+			if (isEmbedded) {
+				expandEmbeddedBanner();
+			} else {
+				adjustPageContentExpandedBanner()
+				document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
+				wasBannerExpandedOnPrevPage = true
+			}
 		}
 
 		if (event.data.bannerVisibility === "bannerCollapsed") {
-			//console.log("Banner Loaded")
-			adjustPageContentCollapseBanner()
-			document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
-			wasBannerExpandedOnPrevPage = false;
+			if (isEmbedded) {
+				initialEmbeddedBanner();
+			} else {
+				adjustPageContentCollapseBanner()
+				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				wasBannerExpandedOnPrevPage = false;
+			}
 		}
-
 
 
 		/**
