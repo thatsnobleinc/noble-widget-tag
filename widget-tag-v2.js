@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.0");
+console.log("[Noble] Noble script loaded 2.0.1");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -35,9 +35,9 @@ const adjustPageContent = (newHeightStr, heightDiff) => {
 
 	if (document.body.style.marginTop != newHeightStr) {
 
-		if (nobleIframe) 
+		if (nobleIframe)
 			nobleIframe.style.height = newHeightStr;
-		
+
 		allElements.forEach((element) => {
 			const computedStyle = getComputedStyle(element);
 
@@ -52,7 +52,7 @@ const adjustPageContent = (newHeightStr, heightDiff) => {
 
 /**
  * Adjust page content for initial, expanded, and collapsed banner
- * */ 
+ * */
 const adjustPageContentInitialBanner = () => {
 	adjustPageContent(BANNER_INITIAL_HEIGHT_STR, BANNER_INITIAL_HEIGHT);
 };
@@ -116,7 +116,7 @@ window.addEventListener("load", () => {
 
 				document.body.style.marginTop = "0";
 
-				
+
 				wasBannerOnPrevPage = false;
 				obs.disconnect();
 			}
@@ -131,16 +131,16 @@ window.addEventListener("load", () => {
 
 	history.pushState = function (...args) {
 		originalPushState.apply(this, args);
-		checkForNoble(); 
+		checkForNoble();
 	};
 
 	history.replaceState = function (...args) {
 		originalReplaceState.apply(this, args);
-		checkForNoble(); 
+		checkForNoble();
 	}
 
 	window.addEventListener("popstate", function () {
-		checkForNoble(); 
+		checkForNoble();
 	});
 })();
 
@@ -178,6 +178,11 @@ window.addEventListener("message", function (event) {
 		 * - Change the whole document body position
 		 */
 		if (event.data.bannerVisibility === "bannerLoaded") {
+
+			const nobleIframe = document.getElementById("nobleIframe");
+			nobleIframe.style.top = "0px";
+			nobleIframe.style.width = "100%"
+
 			//console.log("Banner Loaded")
 			adjustPageContentInitialBanner()
 			document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
