@@ -203,6 +203,7 @@ window.addEventListener("message", function (event) {
 			const nobleIframe = document.getElementById("nobleIframe");
 			nobleIframe.style.top = "0px";
 			nobleIframe.style.width = "100%"
+			nobleIframe.style.border = "none"
 			if (isEmbedded) {
 				initialEmbeddedBanner();
 			} else {
