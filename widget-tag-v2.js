@@ -206,6 +206,11 @@ window.addEventListener("message", function (event) {
 			nobleIframe.style.border = "none"
 			if (isEmbedded) {
 				initialEmbeddedBanner();
+			} else if (wasBannerExpandedOnPrevPage) {
+				adjustPageContentCollapseBanner();
+				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				wasBannerOnPrevPage = true
+				wasBannerExpandedOnPrevPage = false
 			} else {
 				adjustPageContentInitialBanner()
 				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
