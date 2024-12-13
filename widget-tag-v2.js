@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.2");
+console.log("[Noble] Noble script loaded 2.0.3");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -203,8 +203,14 @@ window.addEventListener("message", function (event) {
 			const nobleIframe = document.getElementById("nobleIframe");
 			nobleIframe.style.top = "0px";
 			nobleIframe.style.width = "100%"
+			nobleIframe.style.border = "none"
 			if (isEmbedded) {
 				initialEmbeddedBanner();
+			} else if (wasBannerExpandedOnPrevPage) {
+				adjustPageContentCollapseBanner();
+				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				wasBannerOnPrevPage = true
+				wasBannerExpandedOnPrevPage = false
 			} else {
 				adjustPageContentInitialBanner()
 				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
