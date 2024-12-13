@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.2");
+console.log("[Noble] Noble script loaded 2.0.3");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
