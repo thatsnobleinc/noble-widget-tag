@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.5");
+console.log("[Noble] Noble script loaded 2.0.7");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -37,7 +37,8 @@ const checkIsTopFixedElement = (computedStyle) => {
 
 
 const adjustPageContent = (newHeightStr, heightDiff) => {
-	if (getNobleIframePostition() == 'fixed') {
+	const nobleIframePosition = getNobleIframePostition()
+	if (nobleIframePosition== 'fixed') {
 
 		const allElements = document.querySelectorAll("*");
 
