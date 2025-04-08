@@ -9,6 +9,13 @@ const BANNER_INITIAL_HEIGHT_STR = BANNER_INITIAL_HEIGHT + 'px';
 let wasBannerOnPrevPage;
 let wasBannerExpandedOnPrevPage;
 
+const getNobleIframePostition = () => {
+	const nobleIframe = document.getElementById("nobleIframe");
+	const style = window.getComputedStyle(nobleIframe);
+	
+	return style.getPropertyValue("position");
+}
+
 /**
  * Check if an element is sticky or fixed; and has a top position.
  */
@@ -30,12 +37,7 @@ const checkIsTopFixedElement = (computedStyle) => {
 
 
 const adjustPageContent = (newHeightStr, heightDiff) => {
-	const nobleIframe = document.getElementById("nobleIframe");
-	const style = window.getComputedStyle(nobleIframe);
-	const nobleIframePosition = style.getPropertyValue("position");
-
-
-	if (nobleIframePosition == 'fixed') {
+	if (getNobleIframePostition() == 'fixed') {
 
 		const allElements = document.querySelectorAll("*");
 
@@ -201,7 +203,7 @@ window.addEventListener("message", function (event) {
 			event.source.postMessage({ iframeURL: iframeURL }, event.origin);
 		}
 
-
+		const nobleIframePosition = getNobleIframePostition()
 
 		/**
 		 * Message to:
@@ -218,12 +220,12 @@ window.addEventListener("message", function (event) {
 				initialEmbeddedBanner();
 			} else if (wasBannerExpandedOnPrevPage) {
 				adjustPageContentCollapseBanner();
-				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 				wasBannerOnPrevPage = true
 				wasBannerExpandedOnPrevPage = false
 			} else {
 				adjustPageContentInitialBanner()
-				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 				wasBannerOnPrevPage = true
 				wasBannerExpandedOnPrevPage = false
 			}
@@ -234,7 +236,7 @@ window.addEventListener("message", function (event) {
 				expandEmbeddedBanner();
 			} else {
 				adjustPageContentExpandedBanner()
-				document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
 				wasBannerExpandedOnPrevPage = true
 			}
 		}
@@ -244,7 +246,7 @@ window.addEventListener("message", function (event) {
 				initialEmbeddedBanner();
 			} else {
 				adjustPageContentCollapseBanner()
-				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 				wasBannerExpandedOnPrevPage = false;
 			}
 		}
