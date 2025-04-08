@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.3");
+console.log("[Noble] Noble script loaded 2.0.5");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -30,19 +30,29 @@ const checkIsTopFixedElement = (computedStyle) => {
 
 
 const adjustPageContent = (newHeightStr, heightDiff) => {
-	const allElements = document.querySelectorAll("*");
+	const nobleIframe = document.getElementById("nobleIframe");
+	const style = window.getComputedStyle(nobleIframe);
+	const nobleIframePosition = style.getPropertyValue("position");
 
-	if (document.body.style.marginTop != newHeightStr) {
-		adjustBannerHeight(newHeightStr)
-		allElements.forEach((element) => {
-			const computedStyle = getComputedStyle(element);
 
-			if (element.id === "nobleIframe") return;
-			if (checkIsTopFixedElement(computedStyle)) {
-				const currentTop = parseInt(computedStyle.top) || 0;
-				element.style.top = currentTop + heightDiff + "px";
-			}
-		});
+	if (nobleIframePosition == 'fixed') {
+
+		const allElements = document.querySelectorAll("*");
+
+		if (document.body.style.marginTop != newHeightStr) {
+			adjustBannerHeight(newHeightStr)
+			allElements.forEach((element) => {
+				const computedStyle = getComputedStyle(element);
+
+				if (element.id === "nobleIframe") return;
+				if (checkIsTopFixedElement(computedStyle)) {
+					const currentTop = parseInt(computedStyle.top) || 0;
+					element.style.top = currentTop + heightDiff + "px";
+				}
+			});
+		}
+	} else {
+		console.log(`Noble Iframe Position is ${nobleIframePosition}. Skipping page content adjustment.`)
 	}
 };
 
@@ -149,10 +159,10 @@ window.addEventListener("load", () => {
 		checkForNoble();
 	};
 
-	history.replaceState = function (...args) {
+	/*history.replaceState = function (...args) {
 		originalReplaceState.apply(this, args);
 		checkForNoble();
-	}
+	}*/
 
 	window.addEventListener("popstate", function () {
 		checkForNoble();
@@ -259,4 +269,3 @@ window.addEventListener("message", function (event) {
 		// console.warn("Message received from an untrusted origin:", event.origin);
 	}
 });
-
