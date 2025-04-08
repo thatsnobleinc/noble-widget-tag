@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.3");
+console.log("[Noble] Noble script loaded 2.0.8");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -8,6 +8,13 @@ const BANNER_INITIAL_HEIGHT_STR = BANNER_INITIAL_HEIGHT + 'px';
 
 let wasBannerOnPrevPage;
 let wasBannerExpandedOnPrevPage;
+
+const getNobleIframePostition = () => {
+	const nobleIframe = document.getElementById("nobleIframe");
+	const style = window.getComputedStyle(nobleIframe);
+	
+	return style.getPropertyValue("position");
+}
 
 /**
  * Check if an element is sticky or fixed; and has a top position.
@@ -30,19 +37,26 @@ const checkIsTopFixedElement = (computedStyle) => {
 
 
 const adjustPageContent = (newHeightStr, heightDiff) => {
-	const allElements = document.querySelectorAll("*");
+	const nobleIframePosition = getNobleIframePostition()
+	if (nobleIframePosition== 'fixed') {
 
-	if (document.body.style.marginTop != newHeightStr) {
+		const allElements = document.querySelectorAll("*");
+
+		if (document.body.style.marginTop != newHeightStr) {
+			adjustBannerHeight(newHeightStr)
+			allElements.forEach((element) => {
+				const computedStyle = getComputedStyle(element);
+
+				if (element.id === "nobleIframe") return;
+				if (checkIsTopFixedElement(computedStyle)) {
+					const currentTop = parseInt(computedStyle.top) || 0;
+					element.style.top = currentTop + heightDiff + "px";
+				}
+			});
+		}
+	} else {
+		console.log(`Noble Iframe Position is ${nobleIframePosition}. Skipping page content adjustment.`)
 		adjustBannerHeight(newHeightStr)
-		allElements.forEach((element) => {
-			const computedStyle = getComputedStyle(element);
-
-			if (element.id === "nobleIframe") return;
-			if (checkIsTopFixedElement(computedStyle)) {
-				const currentTop = parseInt(computedStyle.top) || 0;
-				element.style.top = currentTop + heightDiff + "px";
-			}
-		});
 	}
 };
 
@@ -149,10 +163,10 @@ window.addEventListener("load", () => {
 		checkForNoble();
 	};
 
-	history.replaceState = function (...args) {
+	/*history.replaceState = function (...args) {
 		originalReplaceState.apply(this, args);
 		checkForNoble();
-	}
+	}*/
 
 	window.addEventListener("popstate", function () {
 		checkForNoble();
@@ -191,7 +205,7 @@ window.addEventListener("message", function (event) {
 			event.source.postMessage({ iframeURL: iframeURL }, event.origin);
 		}
 
-
+		const nobleIframePosition = getNobleIframePostition()
 
 		/**
 		 * Message to:
@@ -208,12 +222,12 @@ window.addEventListener("message", function (event) {
 				initialEmbeddedBanner();
 			} else if (wasBannerExpandedOnPrevPage) {
 				adjustPageContentCollapseBanner();
-				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 				wasBannerOnPrevPage = true
 				wasBannerExpandedOnPrevPage = false
 			} else {
 				adjustPageContentInitialBanner()
-				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 				wasBannerOnPrevPage = true
 				wasBannerExpandedOnPrevPage = false
 			}
@@ -224,7 +238,7 @@ window.addEventListener("message", function (event) {
 				expandEmbeddedBanner();
 			} else {
 				adjustPageContentExpandedBanner()
-				document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_EXPANDED_HEIGHT_STR;
 				wasBannerExpandedOnPrevPage = true
 			}
 		}
@@ -234,7 +248,7 @@ window.addEventListener("message", function (event) {
 				initialEmbeddedBanner();
 			} else {
 				adjustPageContentCollapseBanner()
-				document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
+				if (nobleIframePosition == 'fixed') document.body.style.marginTop = BANNER_INITIAL_HEIGHT_STR;
 				wasBannerExpandedOnPrevPage = false;
 			}
 		}
@@ -259,4 +273,3 @@ window.addEventListener("message", function (event) {
 		// console.warn("Message received from an untrusted origin:", event.origin);
 	}
 });
-
