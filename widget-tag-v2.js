@@ -1,4 +1,4 @@
-console.log("[Noble] Noble script loaded 2.0.7");
+console.log("[Noble] Noble script loaded 2.0.8");
 
 const BANNER_EXPANDED_HEIGHT = 304;
 const BANNER_INITIAL_HEIGHT = 88;
@@ -56,6 +56,7 @@ const adjustPageContent = (newHeightStr, heightDiff) => {
 		}
 	} else {
 		console.log(`Noble Iframe Position is ${nobleIframePosition}. Skipping page content adjustment.`)
+		adjustBannerHeight(newHeightStr)
 	}
 };
 
